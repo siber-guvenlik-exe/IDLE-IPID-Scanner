@@ -3,14 +3,15 @@ from scapy.all import IP, TCP, Ether, sr1, send, sendp
 import argparse
 from time import sleep
 
-banner= r"""
-███████╗██╗██████╗ ███████╗██████╗          ██████╗ ██╗   ██╗██╗   ██╗███████╗███╗   ██╗██╗     ██╗██╗  ██╗   ███████╗██╗  ██╗███████╗
-██╔════╝██║██╔══██╗██╔════╝██╔══██╗        ██╔════╝ ██║   ██║██║   ██║██╔════╝████╗  ██║██║     ██║██║ ██╔╝   ██╔════╝╚██╗██╔╝██╔════╝
-███████╗██║██████╔╝█████╗  ██████╔╝        ██║  ███╗██║   ██║██║   ██║█████╗  ██╔██╗ ██║██║     ██║█████╔╝    █████╗   ╚███╔╝ █████╗  
-╚════██║██║██╔══██╗██╔══╝  ██╔══██╗        ██║   ██║██║   ██║╚██╗ ██╔╝██╔══╝  ██║╚██╗██║██║     ██║██╔═██╗    ██╔══╝   ██╔██╗ ██╔══╝  
-███████║██║██████╔╝███████╗██║  ██║███████╗╚██████╔╝╚██████╔╝ ╚████╔╝ ███████╗██║ ╚████║███████╗██║██║  ██╗██╗███████╗██╔╝ ██╗███████╗
-╚══════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═════╝   ╚═══╝  ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝╚═╝  ╚═╝╚═╝╚══════╝╚═╝  ╚═╝╚══════╝                                                                                                                                  
-                                                                                                         
+banner= r"""  _ _                                           _ _ _                   
+     (_) |                                         | (_) |                  
+  ___ _| |__   ___ _ __  __ _ _   ___   _____ _ __ | |_| | __  _____  _____ 
+ / __| | '_ \ / _ \ '__|/ _` | | | \ \ / / _ \ '_ \| | | |/ / / _ \ \/ / _ \
+ \__ \ | |_) |  __/ |  | (_| | |_| |\ V /  __/ | | | | |   < |  __/>  <  __/
+ |___/_|_.__/ \___|_|   \__, |\__,_| \_/ \___|_| |_|_|_|_|\_(_)___/_/\_\___|
+                  ______ __/ |                                              
+                 |______|___/                                               
+                                                                                             
    _,-='"-.__               /\_/\
    `-.}       `=._,.-==-._.,  @ @._,
       `-.__   _,-.   )       _,.-'
@@ -41,7 +42,7 @@ def send_synack_to_zombie(zombie_ip):
         ip = IP(dst=zombie_ip,)
         tcp = TCP(
         sport=args.sourceport,  # Source port
-        dport=args.zombieport,           # Destination port
+        dport=int(args.zombieport),           # Destination port
         flags="SA",         # SYN-ACK flag
         window=64240,       # Window size
         seq=1,          # Sequence number
@@ -51,7 +52,7 @@ def send_synack_to_zombie(zombie_ip):
 
         packet = ip / tcp / payload
 
-        response = sr1(packet,iface=args.interface,verbose=False)
+        response = sr1(packet,iface=args.interface,verbose=False,timeout=10)
 
         if response and TCP in response and IP in response:
             ipid = response[IP].id
@@ -72,7 +73,7 @@ def send_syn_to_target(target_ip, dport, spoof_ip):
 
     # Use sendp to send at layer 2
     sendp(Ether() / packet, iface=args.interface,verbose=False)
-    print(f"SYN packet sent to {target_ip} from {spoof_ip}")
+    #print(f"SYN packet sent to {target_ip} from {spoof_ip}")
 
 
 
@@ -172,7 +173,7 @@ except:
     else:
        print("Port Error")
        exit() 
-  
+print("Starting to print")
 ports = []  
 for i in port:
     first_ipid = send_synack_to_zombie(zombie)
@@ -183,8 +184,8 @@ for i in port:
     #print(f"Second IP ID: {second_ipid}")
 
     if second_ipid - first_ipid > 1:
-        print(f"Port is open: {i}\nIPID Difference is {second_ipid - first_ipid}")
+        #print(f"Port is open: {i}\nIPID Difference is {second_ipid - first_ipid}")
         ports.append(i)
-    print("Open Ports: ")
-    print(ports)
-    sleep(1)
+print("Open Ports: ")
+print(ports)
+sleep(0.1)

@@ -24,7 +24,7 @@ parser = argparse.ArgumentParser(
                     description="by redfoxie",
                     epilog='Text at the bottom of help')
 
-parser.add_argument('-z', '--zombie',required=True, help="Zombie IP to use, please an IP that can be used and IDLE (low on tcp traffic)")      # option that takes a value
+parser.add_argument('-z', '--zombie',required=True, help="Zombie IP to use, please specify an IP that can be used and IDLE (low on tcp traffic)")      # option that takes a value
 parser.add_argument('-t', '--target',required=True, help="Target host to scan")      # option that takes a value
 parser.add_argument('-i', '--interface',required=True, help="Interface")      # option that takes a value
 parser.add_argument('-p', '--ports',required=True, help="ALL / [Port Number] / COMMON")      # option that takes a value
@@ -41,7 +41,7 @@ def send_synack_to_zombie(zombie_ip):
     while True:
         ip = IP(dst=zombie_ip,)
         tcp = TCP(
-        sport=args.sourceport,  # Source port
+        sport=int(args.sourceport),  # Source port
         dport=int(args.zombieport),           # Destination port
         flags="SA",         # SYN-ACK flag
         window=64240,       # Window size
